@@ -1,0 +1,82 @@
+class MultiTurnChatbot:
+    def __init__(self):
+      
+        self.state = {
+            "last_topic": None,
+            "last_intent": None
+        }
+
+        self.exam_schedule = {
+            "first year": "March 10, 2026",
+            "second year": "March 12, 2026",
+            "third year": "March 15, 2026",
+            "fourth year": "March 20', 2026"
+        }
+
+
+    def reset_state(self):
+        self.state = {
+            "last_topic": None,
+            "last_intent": None
+        }
+
+    def detect_year(self, message):
+        message = message.lower()
+        for year in self.exam_schedule:
+            if year in message:
+                return year
+        return None
+
+    def process_message(self, message):
+        message = message.lower().strip()
+
+        
+        if message in ["hi", "hello", "hey"]:
+            return "Hello! Ask me about exam dates."
+
+      
+        if message == "reset":
+            self.reset_state()
+            return "Conversation reset."
+
+
+        if "exam" in message:
+            self.state["last_topic"] = "exam"
+            self.state["last_intent"] = "ask_exam_date"
+
+            year = self.detect_year(message)
+
+            if year:
+                return f"The {year} exam is on {self.exam_schedule[year]}."
+            else:
+                return "Which year are you asking about?"
+
+        
+        if self.state["last_topic"] == "exam":
+            year = self.detect_year(message)
+
+            if year:
+                return f"The {year} exam is on {self.exam_schedule[year]}."
+            else:
+                return "Please specify first, second, or third year."
+
+        return "I'm not sure about that. Try asking about exam dates."
+
+
+    def chat(self):
+        print("Chatbot is running!")
+        print("Type 'exit' to stop.\n")
+
+        while True:
+            user_input = input("You: ")
+
+            if user_input.lower() == "exit":
+                print("Bot: Goodbye!")
+                break
+
+            response = self.process_message(user_input)
+            print("Bot:", response)
+
+
+bot = MultiTurnChatbot()
+bot.chat()
